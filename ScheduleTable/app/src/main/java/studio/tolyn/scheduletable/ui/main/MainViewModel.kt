@@ -3,8 +3,13 @@ package studio.tolyn.scheduletable.ui.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.gson.GsonBuilder
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class MainViewModel : ViewModel() {
 
@@ -63,6 +68,23 @@ class MainViewModel : ViewModel() {
     }
 
     private fun loadReview() {
+        //nowByCache amy-estrada
 
+    }
+
+    private fun getRetrofit(apiBase: String): Retrofit {
+        val gson = GsonBuilder()
+            .setLenient()
+            .create()
+
+        val client: OkHttpClient = OkHttpClient.Builder()
+            .writeTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS).build()
+
+        return Retrofit.Builder()
+            .baseUrl(apiBase)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
     }
 }
