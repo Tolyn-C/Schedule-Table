@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">ScheduleTable</string>
-    <string name="teacher_name">Amy Estrada</string>
     <string name="time_zone">Your local time zone</string>
+    <string name="available_times_text">Available times</string>
 </resources>

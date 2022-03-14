@@ -7,20 +7,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.webkit.WebViewClient
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayoutMediator
+import studio.tolyn.scheduletable.BuildConfig
 import studio.tolyn.scheduletable.R
-import studio.tolyn.scheduletable.api.ScheduleResult
-import studio.tolyn.scheduletable.api.TimeSlot
+import studio.tolyn.scheduletable.api.TimePoint
 import studio.tolyn.scheduletable.databinding.MainFragmentBinding
+import studio.tolyn.scheduletable.ui.main.Application.Companion.START_FORMATTER
 import studio.tolyn.scheduletable.ui.main.Application.Companion.TAB_FORMATTER
-import studio.tolyn.scheduletable.ui.main.Application.Companion.TIME_SLOT_LIST
-import java.text.SimpleDateFormat
+import studio.tolyn.scheduletable.ui.main.Application.Companion.TIME_POINT_LIST
 import java.util.*
-import java.util.logging.SimpleFormatter
 import kotlin.math.roundToInt
 
 class MainFragment : Fragment() {
@@ -49,21 +48,23 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setScheduleContainer()
-        dateCollectionAdapter = DateCollectionAdapter(this)
-        viewPager = view.findViewById(R.id.timeSlotPager)
-        viewPager.adapter = dateCollectionAdapter
-        viewModel.dataUpdatedAt.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        openTeacherWebView()
+        viewModel.dataUpdatedAt.observe(viewLifecycleOwner) {
+            //update the tab layout and viewPager
+            dateCollectionAdapter = DateCollectionAdapter(this)
+            viewPager = view.findViewById(R.id.timeSlotPager)
+            viewPager.adapter = dateCollectionAdapter
             viewModel.firstDayOfSearchWeek.value?.let {
                 TabLayoutMediator(binding.dateTab, viewPager) { tab, position ->
-                    val pastDayCount =
-                        Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + position
-                    val cacheTime = it
-                    cacheTime.add(Calendar.DAY_OF_MONTH, pastDayCount)
-                    tab.text = TAB_FORMATTER.format(cacheTime.time)
-                    cacheTime.add(Calendar.DAY_OF_MONTH, pastDayCount * (-1))
+                    it.add(Calendar.DAY_OF_MONTH, position)
+                    tab.text = TAB_FORMATTER.format(it.time)
+                    it.add(Calendar.DAY_OF_MONTH, position * (-1))
                 }.attach()
+                if (it.time.time < Calendar.getInstance().time.time){
+                    viewPager.currentItem = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1)
+                }
             }
-        })
+        }
     }
 
     private fun setScheduleContainer() {
@@ -74,28 +75,47 @@ class MainFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun openTeacherWebView() {
+        binding.webView.webViewClient = WebViewClient()
+        binding.webView.settings.javaScriptEnabled = true
+        binding.webView.loadUrl(BuildConfig.ABOUT_TEACHER_URL)
+    }
+
     private fun dpToPx(dp: Int): Int {
         val density: Float = requireContext().resources.displayMetrics.density
         return (dp.toFloat() * density).roundToInt()
     }
 
     private inner class DateCollectionAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-        override fun getItemCount(): Int {
-            return (7 - Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 1)
-        }
+        override fun getItemCount(): Int = 7
 
-        @SuppressLint("SimpleDateFormat")
         override fun createFragment(position: Int): Fragment {
             val fragment = TimeSlotFragment()
-
             fragment.arguments = Bundle().apply {
-//            putParcelableArrayList(TIME_SLOT_LIST,)
+                val timePointList = arrayListOf<TimePoint>()
+
+                //filter the day time point
+                viewModel.scheduleTable.value?.let {
+                    it.filter { timePoint ->
+                        viewModel.firstDayOfSearchWeek.value?.let { firstDayForWeek ->
+                            firstDayForWeek.add(Calendar.DAY_OF_MONTH, position)
+                            val isTheDay =
+                                START_FORMATTER.format(timePoint.startTime.time) ==
+                                        START_FORMATTER.format(firstDayForWeek.time)
+                            firstDayForWeek.add(Calendar.DAY_OF_MONTH, position * (-1))
+                            isTheDay
+                        } ?: false
+                    }.let { filtered ->
+                        timePointList.addAll(filtered)
+                    }
+                }
+
+                //Put filtered arrayList in Bundle
+                putParcelableArrayList(TIME_POINT_LIST, timePointList)
             }
             return fragment
         }
-
-//        private fun getPositionTimeSlotList(position: Int, timeSlotList :List<TimeSlot>): List<TimeSlot>{
-//        }
     }
 
 }

@@ -27,11 +27,10 @@ data class ScheduleResult(
     val booked: List<TimeSlot>? = null
 )
 
-@Parcelize
 data class TimeSlot(
     /* Created date in ISO8601 date format. */
     @SerializedName("start")
     val start: String? = null,
     @SerializedName("end")
-    val ens: String? = null
-) : Parcelable
+    val end: String? = null
+)

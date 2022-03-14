@@ -22,7 +22,8 @@ android {
         debug {
             applicationIdSuffix ".dev"
             buildConfigField "String", "SCHEDULE_API_URL", "\"https://tw.amazingtalker.com/v1/guest/teachers/\""
-            buildConfigField "String", "TEACHER_NAME", "\"amy-estrada\""
+            buildConfigField "String", "TEACHER_NAME", "\"julia-shin\""
+            buildConfigField "String", "ABOUT_TEACHER_URL", "\"https://en.amazingtalker.com/teachers-and-tutors/julia-shin\""
         }
 
         release {
