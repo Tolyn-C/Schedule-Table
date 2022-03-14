@@ -22,6 +22,7 @@ android {
         debug {
             applicationIdSuffix ".dev"
             buildConfigField "String", "SCHEDULE_API_URL", "\"https://tw.amazingtalker.com/v1/guest/teachers/\""
+            buildConfigField "String", "TEACHER_NAME", "\"amy-estrada\""
         }
 
         release {
@@ -59,6 +60,9 @@ dependencies {
 
     implementation 'com.squareup.retrofit2:retrofit:2.6.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.6.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
+
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
