@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ScheduleTable</string>
+    <string name="time_zone">你的時區</string>
+    <string name="available_times_text">授課時間</string>
+    <string name="loading_error_title">讀取錯誤</string>
+    <string name="morning">白天</string>
+    <string name="evening">黃昏</string>
+    <string name="night">晚上</string>
+</resources>

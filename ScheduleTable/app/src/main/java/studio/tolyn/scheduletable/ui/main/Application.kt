@@ -2,6 +2,7 @@ package studio.tolyn.scheduletable.ui.main
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.res.Resources
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -20,7 +21,8 @@ class Application : Application() {
         val END_FORMATTER = SimpleDateFormat("MM-dd")
 
         @SuppressLint("ConstantLocale")
-        val TAB_FORMATTER = SimpleDateFormat("EEE, MMM dd", Locale.getDefault())
+        val TAB_FORMATTER =
+            SimpleDateFormat("EEE, MMM dd", Resources.getSystem().configuration.locales.get(0))
 
         @SuppressLint("ConstantLocale")
         val TIME_FORMATTER = SimpleDateFormat("HH:mm", Locale.getDefault())
