@@ -9,6 +9,7 @@ import studio.tolyn.scheduletable.api.ScheduleClient
 import studio.tolyn.scheduletable.api.TimePoint
 import studio.tolyn.scheduletable.ui.main.Application.Companion.END_FORMATTER
 import studio.tolyn.scheduletable.ui.main.Application.Companion.START_FORMATTER
+import java.lang.Exception
 import java.util.*
 
 class MainViewModel : ViewModel() {
@@ -27,6 +28,8 @@ class MainViewModel : ViewModel() {
     val scheduleTable: LiveData<List<TimePoint>> = _scheduleTable
 
     val dataUpdatedAt = MutableLiveData(System.currentTimeMillis())
+
+    val errorText: MutableLiveData<String?> = MutableLiveData(null)
 
     init {
         refreshDataForCurrentMode()
@@ -79,8 +82,12 @@ class MainViewModel : ViewModel() {
         firstDayOfSearchWeek.value?.let {
             val gmtTimeString: String = gmtFormatter.format(it.time)
             viewModelScope.launch {
-                _scheduleTable.value = ScheduleClient().getScheduleTimeSlotList(gmtTimeString)
-                dataUpdatedAt.value = System.currentTimeMillis()
+                try {
+                    _scheduleTable.value = ScheduleClient().getScheduleTimeSlotList(gmtTimeString)
+                    dataUpdatedAt.value = System.currentTimeMillis()
+                } catch (e: Exception) {
+                    errorText.value = e.message
+                }
             }
         }
     }

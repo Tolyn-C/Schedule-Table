@@ -1,8 +1,6 @@
 package studio.tolyn.scheduletable.api
 
-import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -14,10 +12,6 @@ interface ScheduleApi {
         @Path("teacherName") teacherName: String,
         @Query("started_at") startAt: String
     ): Response<ScheduleResult?>
-}
-
-enum class Status {
-    Available, Booked
 }
 
 data class ScheduleResult(

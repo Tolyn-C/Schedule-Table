@@ -11,6 +11,7 @@ import android.webkit.WebViewClient
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
 import studio.tolyn.scheduletable.BuildConfig
 import studio.tolyn.scheduletable.R
@@ -60,9 +61,19 @@ class MainFragment : Fragment() {
                     tab.text = TAB_FORMATTER.format(it.time)
                     it.add(Calendar.DAY_OF_MONTH, position * (-1))
                 }.attach()
-                if (it.time.time < Calendar.getInstance().time.time){
-                    viewPager.currentItem = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1)
+                if (it.time.time < Calendar.getInstance().time.time) {
+                    viewPager.currentItem = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1)
                 }
+            }
+        }
+        viewModel.errorText.observe(viewLifecycleOwner) {
+            it?.let {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.loading_error_title)
+                    .setMessage(it)
+                    .setPositiveButton(R.string.ok) { _, _ -> }
+                    .setCancelable(true)
+                    .show()
             }
         }
     }

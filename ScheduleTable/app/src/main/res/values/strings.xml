@@ -2,4 +2,9 @@
     <string name="app_name">ScheduleTable</string>
     <string name="time_zone">Your local time zone</string>
     <string name="available_times_text">Available times</string>
+    <string name="loading_error_title">Loading Error</string>
+    <string name="ok">OK</string>
+    <string name="morning">Morning</string>
+    <string name="evening">Evening</string>
+    <string name="night">Night</string>
 </resources>

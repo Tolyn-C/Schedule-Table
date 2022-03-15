@@ -9,14 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.launch
 import studio.tolyn.scheduletable.R
 import studio.tolyn.scheduletable.api.TimePoint
 import studio.tolyn.scheduletable.databinding.TimeSlotFragmentBinding
 import studio.tolyn.scheduletable.ui.main.Application.Companion.TIME_FORMATTER
+import java.util.*
 
 class TimeSlotFragment : Fragment() {
 
@@ -40,12 +39,27 @@ class TimeSlotFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.morning.layoutManager = LinearLayoutManager(requireContext())
+        binding.evening.layoutManager = LinearLayoutManager(requireContext())
+        binding.night.layoutManager = LinearLayoutManager(requireContext())
         arguments?.takeIf { it.containsKey(Application.TIME_POINT_LIST) }?.apply {
             this.getParcelableArrayList<TimePoint>(Application.TIME_POINT_LIST)
                 ?.let { timePointList ->
-                    binding.recyclerView.adapter = TimePointAdapter(requireContext()).also {
-                        it.items = timePointList.toList()
+                    binding.morning.adapter = TimePointAdapter(requireContext()).also {
+                        it.items = timePointList.filter { timePoint ->
+                            timePoint.startTime.get(Calendar.HOUR_OF_DAY) in 5..17
+                        }
+                    }
+                    binding.evening.adapter = TimePointAdapter(requireContext()).also {
+                        it.items = timePointList.filter { timePoint ->
+                            timePoint.startTime.get(Calendar.HOUR_OF_DAY) in 18..21
+                        }
+                    }
+                    binding.night.adapter = TimePointAdapter(requireContext()).also {
+                        it.items = timePointList.filter { timePoint ->
+                            timePoint.startTime.get(Calendar.HOUR_OF_DAY) in 0..4 ||
+                                    timePoint.startTime.get(Calendar.HOUR_OF_DAY) in 22..24
+                        }
                     }
                 }
         }
