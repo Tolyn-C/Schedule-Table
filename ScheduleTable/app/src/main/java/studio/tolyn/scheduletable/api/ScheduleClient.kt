@@ -45,7 +45,7 @@ class ScheduleClient {
             .create()
 
         val interceptor = HttpLoggingInterceptor()
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
+        interceptor.level = HttpLoggingInterceptor.Level.NONE
 
         val client: OkHttpClient = OkHttpClient.Builder()
             .addInterceptor(interceptor)
